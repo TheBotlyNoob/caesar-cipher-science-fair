@@ -44,7 +44,20 @@ impl Application for App {
   fn view(&mut self) -> Element<Message> {
     Column::new()
       .padding(60)
-      .push(TextInput::new(self.key_input_state, "", self.key))
+      .push(TextInput::new(
+        &mut self.key_input_state,
+        "",
+        &self.key,
+        |key| {
+          let key = key.parse::<u8>().unwrap();
+
+          if key < 25 && key > 0 {
+            Message::Nothing
+          } else {
+            Message::Nothing
+          }
+        },
+      ))
       .into()
   }
 }
