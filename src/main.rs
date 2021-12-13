@@ -3,10 +3,10 @@
 // #![windows_subsystem = "windows"]
 // use spellbound::Checker;
 
-const ORIGINAL_ALPHABET: [char; 50] = [
+const ORIGINAL_ALPHABET: [char; 52] = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-  't', 'u', 'v', 'w', 'x', 'y', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+  't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+  'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 ];
 
 fn main() {
@@ -19,19 +19,6 @@ fn main() {
   //     .map(|error| error.text().to_owned())
   //     .collect::<Vec<String>>()
   // );
-
-  println!(
-    r#" 
-     _____                                  _____  _         _                  ______                         _                         _____                          _             
-    /  __ \                                /  __ \(_)       | |                 |  _  \                       | |               ___     |  ___|                        | |            
-    | /  \/  __ _   ___  ___   __ _  _ __  | /  \/ _  _ __  | |__    ___  _ __  | | | |  ___   ___   ___    __| |  ___  _ __   ( _ )    | |__   _ __    ___   ___    __| |  ___  _ __ 
-    | |     / _` | / _ \/ __| / _` || '__| | |    | || '_ \ | '_ \  / _ \| '__| | | | | / _ \ / __| / _ \  / _` | / _ \| '__|  / _ \/\  |  __| | '_ \  / __| / _ \  / _` | / _ \| '__|
-    | \__/\| (_| ||  __/\__ \| (_| || |    | \__/\| || |_) || | | ||  __/| |    | |/ / |  __/| (__ | (_) || (_| ||  __/| |    | (_>  <  | |___ | | | || (__ | (_) || (_| ||  __/| |   
-     \____/ \__,_| \___||___/ \__,_||_|     \____/|_|| .__/ |_| |_| \___||_|    |___/   \___| \___| \___/  \__,_| \___||_|     \___/\/  \____/ |_| |_| \___| \___/  \__,_| \___||_|   
-                                                     | |                                                                                                                             
-                                                     |_|                                                                                                                          
-  "#
-  );
 
   let menu_options = vec!["Decode", "Encode"];
 
@@ -76,6 +63,8 @@ fn encode() {
   }
 
   let alphabet = create_alphabet(shift, &rotation);
+
+  println!("{:#?}", alphabet);
 
   let mut encoded = plain_text;
   for (index, letter) in alphabet.iter().enumerate() {
@@ -130,7 +119,7 @@ fn get_int(prompt: &str, can_be_empty: bool) -> isize {
 }
 
 fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
-  let lowercase = (97..122)
+  let lowercase = (97..123)
     .map(|code: u8| {
       let code_with_shift = if rotation == "left" {
         let mut code_with_shift = code - shift;
@@ -153,7 +142,7 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
     })
     .collect::<Vec<char>>();
 
-  let uppercase = (65..90)
+  let uppercase = (65..91)
     .map(|code: u8| {
       let code_with_shift = if rotation == "left" {
         let mut code_with_shift = code - shift;
@@ -162,6 +151,8 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
           code_with_shift += 26;
         }
 
+        println!("{}", code_with_shift);
+
         code_with_shift
       } else {
         let mut code_with_shift = code + shift;
@@ -169,6 +160,8 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
         if code_with_shift >= 26 + 65 {
           code_with_shift -= 26;
         }
+
+        println!("{}", code_with_shift);
 
         code_with_shift
       };
