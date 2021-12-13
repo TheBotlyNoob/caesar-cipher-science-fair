@@ -72,7 +72,10 @@ fn encode() {
 
   let alphabet = create_alphabet(shift, &rotation);
 
-  println!("{}\n{:#?}", plain_text, alphabet);
+  let mut encoded = plain_text;
+  for (i, letter) in alphabet.iter().enumerate() {
+    encoded.replace(letter);
+  }
 }
 
 fn decode() {}
@@ -121,16 +124,52 @@ fn get_int(prompt: &str, can_be_empty: bool) -> isize {
 
 fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
   let lowercase = (97..122)
-    .map(|code: u8| code as char)
+    .map(|code: u8| {
+      let code_with_shift = if rotation == "left" {
+        let mut code_with_shift = code - shift;
+
+        if code_with_shift < 97 {
+          code_with_shift = code_with_shift + 26;
+        }
+
+        code_with_shift
+      } else {
+        let mut code_with_shift = code + shift;
+
+        if code_with_shift >= 26 + 97 {
+          code_with_shift = code_with_shift - 26;
+        }
+
+        code_with_shift
+      };
+      let letter = code_with_shift as char;
+
+      letter
+    })
     .collect::<Vec<char>>();
 
   let uppercase = (65..90)
     .map(|code: u8| {
-      if rotation == "left" {
-        (code - shift) as char
+      let code_with_shift = if rotation == "left" {
+        let mut code_with_shift = code - shift;
+
+        if code_with_shift < 65 {
+          code_with_shift = code_with_shift + 26;
+        }
+
+        code_with_shift
       } else {
-        (code + shift) as char
-      }
+        let mut code_with_shift = code + shift;
+
+        if code_with_shift >= 26 + 65 {
+          code_with_shift = code_with_shift - 26;
+        }
+
+        code_with_shift
+      };
+      let letter = code_with_shift as char;
+
+      letter
     })
     .collect::<Vec<char>>();
 
