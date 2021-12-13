@@ -136,7 +136,7 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
         let mut code_with_shift = code - shift;
 
         if code_with_shift < 97 {
-          code_with_shift = code_with_shift + 26;
+          code_with_shift += 26;
         }
 
         code_with_shift
@@ -144,14 +144,12 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
         let mut code_with_shift = code + shift;
 
         if code_with_shift >= 26 + 97 {
-          code_with_shift = code_with_shift - 26;
+          code_with_shift -= 26;
         }
 
         code_with_shift
       };
-      let letter = code_with_shift as char;
-
-      letter
+      code_with_shift as char
     })
     .collect::<Vec<char>>();
 
@@ -161,7 +159,7 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
         let mut code_with_shift = code - shift;
 
         if code_with_shift < 65 {
-          code_with_shift = code_with_shift + 26;
+          code_with_shift += 26;
         }
 
         code_with_shift
@@ -169,14 +167,12 @@ fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
         let mut code_with_shift = code + shift;
 
         if code_with_shift >= 26 + 65 {
-          code_with_shift = code_with_shift - 26;
+          code_with_shift -= 26;
         }
 
         code_with_shift
       };
-      let letter = code_with_shift as char;
-
-      letter
+      code_with_shift as char
     })
     .collect::<Vec<char>>();
 
