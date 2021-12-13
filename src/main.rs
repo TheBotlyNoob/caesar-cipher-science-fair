@@ -1,10 +1,9 @@
 // Trying to decode and encode a caesar cipher with a GUI
 
 // #![windows_subsystem = "windows"]
-use spellbound::Checker;
-use std::io::Result;
+// use spellbound::Checker;
 
-fn main() -> Result<()> {
+fn main() {
   // let mut spell_checker = Checker::new();
 
   // println!(
@@ -54,8 +53,6 @@ fn main() -> Result<()> {
     "Encode" => encode(),
     &_ => (),
   }
-
-  Ok(())
 }
 
 fn encode() {
@@ -123,5 +120,19 @@ fn get_int(prompt: &str, can_be_empty: bool) -> isize {
 }
 
 fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
-  panic!("TODO")
+  let lowercase = (97..122)
+    .map(|code: u8| code as char)
+    .collect::<Vec<char>>();
+
+  let uppercase = (65..90)
+    .map(|code: u8| {
+      if rotation == "left" {
+        (code - shift) as char
+      } else {
+        (code + shift) as char
+      }
+    })
+    .collect::<Vec<char>>();
+
+  [lowercase, uppercase].concat()
 }
