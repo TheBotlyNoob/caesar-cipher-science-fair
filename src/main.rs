@@ -3,6 +3,12 @@
 // #![windows_subsystem = "windows"]
 // use spellbound::Checker;
 
+const ORIGINAL_ALPHABET: [char; 50] = [
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+  't', 'u', 'v', 'w', 'x', 'y', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+];
+
 fn main() {
   // let mut spell_checker = Checker::new();
 
@@ -23,10 +29,9 @@ fn main() {
     | \__/\| (_| ||  __/\__ \| (_| || |    | \__/\| || |_) || | | ||  __/| |    | |/ / |  __/| (__ | (_) || (_| ||  __/| |    | (_>  <  | |___ | | | || (__ | (_) || (_| ||  __/| |   
      \____/ \__,_| \___||___/ \__,_||_|     \____/|_|| .__/ |_| |_| \___||_|    |___/   \___| \___| \___/  \__,_| \___||_|     \___/\/  \____/ |_| |_| \___| \___/  \__,_| \___||_|   
                                                      | |                                                                                                                             
-                                                     |_|                                                                                                                             "#
+                                                     |_|                                                                                                                          
+  "#
   );
-
-  println!("");
 
   let menu_options = vec!["Decode", "Encode"];
 
@@ -73,9 +78,11 @@ fn encode() {
   let alphabet = create_alphabet(shift, &rotation);
 
   let mut encoded = plain_text;
-  for (i, letter) in alphabet.iter().enumerate() {
-    encoded.replace(letter);
+  for (index, letter) in alphabet.iter().enumerate() {
+    encoded = encoded.replace(ORIGINAL_ALPHABET[index], &letter.to_string());
   }
+
+  println!("{}", encoded);
 }
 
 fn decode() {}
