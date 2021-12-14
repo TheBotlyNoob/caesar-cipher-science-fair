@@ -119,55 +119,20 @@ fn get_int(prompt: &str, can_be_empty: bool) -> isize {
 }
 
 fn create_alphabet(shift: u8, rotation: &str) -> Vec<char> {
-  let lowercase = (97..123)
-    .map(|code: u8| {
-      let code_with_shift = if rotation == "left" {
-        let mut code_with_shift = code - shift;
-
-        if code_with_shift < 97 {
-          code_with_shift += 26;
-        }
-
-        code_with_shift
+  let use_mapper = |first_number: u8| {
+    move |code: u8| {
+      (((if rotation == "left" {
+        code - shift
       } else {
-        let mut code_with_shift = code + shift;
+        code + shift
+      }) % 26)
+        + first_number) as char
+    }
+  };
 
-        if code_with_shift >= 26 + 97 {
-          code_with_shift -= 26;
-        }
+  let lowercase = (97..122).map(use_mapper(97)).collect::<Vec<char>>();
 
-        code_with_shift
-      };
-      code_with_shift as char
-    })
-    .collect::<Vec<char>>();
-
-  let uppercase = (65..91)
-    .map(|code: u8| {
-      let code_with_shift = if rotation == "left" {
-        let mut code_with_shift = code - shift;
-
-        if code_with_shift < 65 {
-          code_with_shift += 26;
-        }
-
-        println!("{}", code_with_shift);
-
-        code_with_shift
-      } else {
-        let mut code_with_shift = code + shift;
-
-        if code_with_shift >= 26 + 65 {
-          code_with_shift -= 26;
-        }
-
-        println!("{}", code_with_shift);
-
-        code_with_shift
-      };
-      code_with_shift as char
-    })
-    .collect::<Vec<char>>();
+  let uppercase = (65..90).map(use_mapper(65)).collect::<Vec<char>>();
 
   [lowercase, uppercase].concat()
 }
