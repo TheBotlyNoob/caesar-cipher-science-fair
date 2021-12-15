@@ -53,7 +53,11 @@ fn decode() {
   let encoded = get_string("What is the encoded text? ");
 
   if knows {
-    let shift = get_int("What is the shift (number)? ") as u8;
+    let mut shift = get_int("What is the shift (number)? ") as u8;
+
+    while shift >= 25 {
+      shift = get_int("What shift do you want to use (number)? ") as u8
+    }
 
     let decoded = _decode(shift, &encoded);
 
@@ -94,10 +98,15 @@ fn _decode(shift: u8, encoded: &str) -> String {
   let mut decoded = String::new();
   for letter in encoded.chars() {
     if letter.is_uppercase() {
-      decoded.push_str(&(((((letter as u8 - shift) - 65) % 26) + 65) as char).to_string());
+      decoded.push_str(
+        &((((letter as u8 as i8 - shift as i8) - 65).rem_euclid(26) + 65) as u8 as char)
+          .to_string(),
+      );
     } else if letter.is_lowercase() {
-      println!("{}", (letter as u8 - shift));
-      decoded.push_str(&(((((letter as u8 - shift) - 97) % 26) + 97) as char).to_string());
+      decoded.push_str(
+        &((((letter as u8 as i8 - shift as i8) - 65).rem_euclid(26) + 97) as u8 as char)
+          .to_string(),
+      );
     } else {
       decoded.push_str(&letter.to_string());
     }
