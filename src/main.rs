@@ -34,7 +34,16 @@ fn encode() {
     shift = get_int("What shift do you want to use (number)? ") as u8
   }
 
-  let encoded = _encode(shift as i8, &plain_text);
+  let mut encoded = String::new();
+  for letter in plain_text.chars() {
+    if letter.is_uppercase() {
+      encoded.push_str(&(((((letter as u8 + shift) - 65) % 26) + 65) as char).to_string());
+    } else if letter.is_lowercase() {
+      encoded.push_str(&(((((letter as u8 + shift) - 97) % 26) + 97) as char).to_string());
+    } else {
+      encoded.push_str(&letter.to_string());
+    }
+  }
 
   println!("{}", encoded);
 }
@@ -82,24 +91,19 @@ fn decode() {
 }
 
 fn _decode(shift: u8, encoded: &str) -> String {
-  _encode(0 as i8 - shift as i8, encoded)
-}
-
-fn _encode(shift: i8, plain_text: &str) -> String {
-  let mut encoded = String::new();
-  for letter in plain_text.chars() {
+  let mut decoded = String::new();
+  for letter in encoded.chars() {
     if letter.is_uppercase() {
-      encoded
-        .push_str(&(((((letter as u8 as i8 + shift) as u8 - 65) % 26) + 65) as char).to_string());
+      decoded.push_str(&(((((letter as u8 - shift) - 65) % 26) + 65) as char).to_string());
     } else if letter.is_lowercase() {
-      encoded
-        .push_str(&(((((letter as u8 as i8 + shift) as u8 - 97) % 26) + 97) as char).to_string());
+      println!("{}", (letter as u8 - shift));
+      decoded.push_str(&(((((letter as u8 - shift) - 97) % 26) + 97) as char).to_string());
     } else {
-      encoded.push_str(&letter.to_string());
+      decoded.push_str(&letter.to_string());
     }
   }
 
-  encoded
+  decoded
 }
 
 fn get_bool(prompt: &str) -> bool {
