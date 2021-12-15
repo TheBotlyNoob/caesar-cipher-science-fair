@@ -7,4 +7,3 @@ edition = "2021"
 
 [dependencies]
 # iced = "0.3"
-ryaspeller = "0.1"
