@@ -2,6 +2,8 @@
 
 // #![windows_subsystem = "windows"]
 
+mod dictionary;
+
 fn main() {
   let menu_options = vec!["Decrypt", "Encrypt"];
 
@@ -33,6 +35,12 @@ fn encrypt() {
     shift = get_int("What shift do you want to use (number)? ") as u8
   }
 
+  let encrypted = _encrypt(shift, &plain_text);
+
+  println!("{}", encrypted);
+}
+
+fn _encrypt(shift: u8, plain_text: &str) -> String {
   let mut encrypted = String::new();
   for letter in plain_text.chars() {
     if letter.is_uppercase() {
@@ -44,7 +52,7 @@ fn encrypt() {
     }
   }
 
-  println!("{}", encrypted);
+  encrypted
 }
 
 fn decrypt() {
@@ -57,32 +65,75 @@ fn decrypt() {
       shift = get_int("What shift do you want to use (number)? ") as u8
     }
 
-    let mut decrypted = String::new();
-    for letter in encrypted.chars() {
-      if letter.is_uppercase() {
-        decrypted.push_str(&(((((letter as u8 - shift) - 65) % 26) + 65) as char).to_string());
-      } else if letter.is_lowercase() {
-        decrypted.push_str(
-          &(((((letter as u8 - shift) as i8 - 97).rem_euclid(26)) + 97) as u8 as char).to_string(),
-        );
-      } else {
-        decrypted.push_str(&letter.to_string());
-      }
-    }
+    let decrypted = _decrypt(shift as u8, &encrypted);
 
     println!("{}", decrypted);
   } else {
+    use dictionary::DICTIONARY;
+
+    let mispelled_words_percent_threshold = 25;
+
+    for shift in 0..25 {
+      let decrypted = _decrypt(shift, &encrypted);
+
+      let words = decrypted
+        .split(' ')
+        .map(|word| {
+          word.replace(
+            &['(', ')', ',', '\"', '.', ';', ':', '\'', '!', '[', ']'][..],
+            "",
+          )
+        })
+        .collect::<Vec<String>>();
+
+      let percent_of_mispelled_words = {
+        let mut number_of_mispelled_words = 0;
+        for word in &words {
+          if !DICTIONARY.contains(&&*word.to_lowercase()) {
+            number_of_mispelled_words += 1;
+          }
+        }
+
+        (100 * number_of_mispelled_words) / words.len()
+      };
+
+      if percent_of_mispelled_words > mispelled_words_percent_threshold {
+        println!("got {}, so {} is NOT the shift", decrypted, shift);
+      } else {
+        println!("got {}, so {} is the shift", decrypted, shift);
+        break;
+      }
+    }
   }
+}
+
+fn _decrypt(shift: u8, encrypted: &str) -> String {
+  let mut decrypted = String::new();
+  for letter in encrypted.chars() {
+    if letter.is_uppercase() {
+      decrypted.push_str(
+        &(((((letter as u8 - shift) as i8 - 65).rem_euclid(26)) + 65) as u8 as char).to_string(),
+      );
+    } else if letter.is_lowercase() {
+      decrypted.push_str(
+        &(((((letter as u8 - shift) as i8 - 97).rem_euclid(26)) + 97) as u8 as char).to_string(),
+      );
+    } else {
+      decrypted.push_str(&letter.to_string());
+    }
+  }
+
+  decrypted
 }
 
 fn get_bool(prompt: &str) -> bool {
   let mut _str = get_string(prompt);
 
-  while !_str.to_lowercase().starts_with("y") && !_str.to_lowercase().starts_with("n") {
+  while !_str.to_lowercase().starts_with('y') && !_str.to_lowercase().starts_with('n') {
     _str = get_string(prompt);
   }
 
-  _str.to_lowercase().starts_with("y")
+  _str.to_lowercase().starts_with('y')
 }
 
 fn get_int(prompt: &str) -> usize {
