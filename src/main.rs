@@ -79,10 +79,12 @@ fn decrypt() {
       let words = decrypted
         .split(' ')
         .map(|word| {
-          word.replace(
-            &['(', ')', ',', '\"', '.', ';', ':', '\'', '!', '[', ']'][..],
-            "",
-          )
+          word
+            .chars()
+            .filter(|_char| {
+              (65..90).contains(&(*_char as u8)) || (97..122).contains(&(*_char as u8))
+            })
+            .collect::<String>()
         })
         .collect::<Vec<String>>();
 
@@ -99,6 +101,7 @@ fn decrypt() {
 
       if percent_of_mispelled_words > mispelled_words_percent_threshold {
         println!("got {}, so {} is NOT the shift", decrypted, shift);
+        continue;
       } else {
         println!("got {}, so {} is the shift", decrypted, shift);
         break;
