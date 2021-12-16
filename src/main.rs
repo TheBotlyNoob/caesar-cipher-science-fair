@@ -71,7 +71,7 @@ fn decrypt() {
   } else {
     use dictionary::DICTIONARY;
 
-    let mispelled_words_percent_threshold = 25;
+    let mispelled_words_percent_threshold = 35;
 
     for shift in 0..25 {
       let decrypted = _decrypt(shift, &encrypted);
