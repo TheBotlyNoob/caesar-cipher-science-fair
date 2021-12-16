@@ -3,9 +3,10 @@
 // #![windows_subsystem = "windows"]
 
 mod dictionary;
+use std::process::exit;
 
 fn main() {
-  let menu_options = vec!["Decrypt", "Encrypt"];
+  let menu_options = vec!["Decrypt", "Encrypt", "Exit"];
 
   for (i, item) in menu_options.iter().enumerate() {
     println!("{}: {}", i + 1, item);
@@ -22,6 +23,7 @@ fn main() {
   match menu_option {
     "Decrypt" => decrypt(),
     "Encrypt" => encrypt(),
+    "Exit" => exit(0),
     &_ => (),
   }
 }
@@ -37,7 +39,9 @@ fn encrypt() {
 
   let encrypted = _encrypt(shift, &plain_text);
 
-  println!("{}", encrypted);
+  println!("The encrypted text is: {}", encrypted);
+
+  main();
 }
 
 fn _encrypt(shift: u8, plain_text: &str) -> String {
@@ -67,7 +71,7 @@ fn decrypt() {
 
     let decrypted = _decrypt(shift as u8, &encrypted);
 
-    println!("{}", decrypted);
+    println!("The plain text is: {}", decrypted);
   } else {
     use dictionary::DICTIONARY;
 
@@ -104,10 +108,13 @@ fn decrypt() {
         continue;
       } else {
         println!("got {}, so {} is the shift", decrypted, shift);
+        println!("The plain text is: {}", decrypted);
         break;
       }
     }
   }
+
+  main();
 }
 
 fn _decrypt(shift: u8, encrypted: &str) -> String {
