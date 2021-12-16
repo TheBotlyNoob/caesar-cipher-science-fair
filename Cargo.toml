@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 # iced = "0.3"
+owo-colors = "3.1"

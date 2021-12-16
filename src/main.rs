@@ -3,26 +3,35 @@
 // #![windows_subsystem = "windows"]
 
 mod dictionary;
+use owo_colors::OwoColorize;
 use std::process::exit;
 
 fn main() {
-  let menu_options = vec!["Decrypt", "Encrypt", "Exit"];
+  let menu_options = vec!["Encrypt", "Decrypt", "Exit"];
 
   for (i, item) in menu_options.iter().enumerate() {
-    println!("{}: {}", i + 1, item);
+    println!("{}: {}", (i + 1).green(), item.bright_blue());
   }
 
-  let mut menu_option = get_int(&format!("Choose an option (1-{}): ", menu_options.len()));
+  let mut menu_option = get_int(&format!(
+    "Choose an option ({}-{}): ",
+    1.green(),
+    menu_options.len().green()
+  ));
 
   while menu_option > menu_options.len() {
-    menu_option = get_int(&format!("Choose an option (1-{}): ", menu_options.len()))
+    menu_option = get_int(&format!(
+      "Choose an option ({}-{}): ",
+      1.green(),
+      menu_options.len().green()
+    ))
   }
 
   let menu_option = menu_options[menu_option - 1];
 
   match menu_option {
-    "Decrypt" => decrypt(),
     "Encrypt" => encrypt(),
+    "Decrypt" => decrypt(),
     "Exit" => exit(0),
     &_ => (),
   }
@@ -31,15 +40,21 @@ fn main() {
 fn encrypt() {
   let plain_text = get_string("What is the message that you want to encrypt? ");
 
-  let mut shift = get_int("What shift do you want to use (number)? ") as u8;
+  let mut shift = get_int(&format!(
+    "What shift do you want to use ({})? ",
+    "number".bright_blue()
+  )) as u8;
 
   while shift > 26 {
-    shift = get_int("What shift do you want to use (number)? ") as u8
+    shift = get_int(&format!(
+      "What shift do you want to use ({})? ",
+      "number".bright_blue()
+    )) as u8
   }
 
   let encrypted = _encrypt(shift, &plain_text);
 
-  println!("The encrypted text is: {}", encrypted);
+  println!("The encrypted text is: {}", encrypted.bright_blue());
 
   main();
 }
@@ -61,17 +76,24 @@ fn _encrypt(shift: u8, plain_text: &str) -> String {
 
 fn decrypt() {
   let encrypted = get_string("What is the encrypted text? ");
-  let knows = get_bool("Do you know the shift (yes / no)? ");
+  let knows = get_bool(&format!(
+    "Do you know the shift ({} / {})? ",
+    "yes".green(),
+    "no".red(),
+  ));
 
   if knows {
-    let mut shift = get_int("What is the shift (number)? ") as u8;
+    let mut shift = get_int(&format!("What is the shift ({})? ", "number".bright_blue())) as u8;
     while shift > 26 {
-      shift = get_int("What shift do you want to use (number)? ") as u8
+      shift = get_int(&format!(
+        "What shift do you want to use ({})? ",
+        "number".bright_blue()
+      )) as u8
     }
 
     let decrypted = _decrypt(shift as u8, &encrypted);
 
-    println!("The plain text is: {}", decrypted);
+    println!("The plain text is: {}", decrypted.bright_blue());
   } else {
     use dictionary::DICTIONARY;
 
@@ -104,12 +126,20 @@ fn decrypt() {
       };
 
       if percent_of_mispelled_words > mispelled_words_percent_threshold {
-        println!("got {}, so {} is NOT the shift", decrypted, shift);
+        println!(
+          "got {}, so {} is {} the shift",
+          decrypted.red(),
+          "NOT".red(),
+          shift
+        );
         continue;
       } else {
-        println!("got {}, so {} is the shift", decrypted, shift);
-        println!("The plain text is: {}", decrypted);
-        break;
+        println!(
+          "got {}, so {} could be the shift",
+          decrypted.bright_blue(),
+          shift.bright_blue()
+        );
+        println!("The plain text is: {}", decrypted.bright_blue());
       }
     }
   }
