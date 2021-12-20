@@ -7,6 +7,8 @@ use owo_colors::OwoColorize;
 use std::process::exit;
 
 fn main() {
+  println!("\n");
+
   let menu_options = vec!["Encrypt", "Decrypt", "Exit"];
 
   for (i, item) in menu_options.iter().enumerate() {
@@ -99,7 +101,9 @@ fn decrypt() {
 
     let mispelled_words_percent_threshold = 35;
 
-    for shift in 0..25 {
+    let mut tries = Vec::<Tried>::new();
+
+    for shift in 0..26 {
       let decrypted = _decrypt(shift, &encrypted);
 
       let words = decrypted
@@ -129,19 +133,50 @@ fn decrypt() {
         println!(
           "got {}, so {} is {} the shift",
           decrypted.red(),
-          "NOT".red(),
-          shift
+          shift,
+          "NOT".red()
         );
-        continue;
       } else {
         println!(
           "got {}, so {} could be the shift",
           decrypted.bright_blue(),
           shift.bright_blue()
         );
-        println!("The plain text is: {}", decrypted.bright_blue());
+      }
+
+      tries.push(Tried {
+        percent_of_mispelled_words,
+        shift,
+        decrypted,
+      })
+    }
+
+    let mut lowest_percent = 100;
+    let mut possible_tries = Vec::<&Tried>::new();
+
+    for tried in &tries {
+      if tried.percent_of_mispelled_words < lowest_percent {
+        lowest_percent = tried.percent_of_mispelled_words;
       }
     }
+
+    for tried in &tries {
+      if tried.percent_of_mispelled_words == lowest_percent {
+        possible_tries.push(tried);
+      }
+    }
+
+    println!(
+      "The possible shifts are: {}",
+      possible_tries
+        .iter()
+        .map(|tried| format!(
+          "{} which gave {}",
+          tried.shift.bright_blue(),
+          tried.decrypted.bright_blue(),
+        ))
+        .fold(String::new(), |a, b| (a + &b) + ", ")
+    );
   }
 
   main();
@@ -164,6 +199,13 @@ fn _decrypt(shift: u8, encrypted: &str) -> String {
   }
 
   decrypted
+}
+
+#[derive(Clone, Debug)]
+struct Tried {
+  percent_of_mispelled_words: usize,
+  decrypted: String,
+  shift: u8,
 }
 
 fn get_bool(prompt: &str) -> bool {
