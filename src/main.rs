@@ -175,7 +175,8 @@ fn decrypt() {
           tried.shift.bright_blue(),
           tried.decrypted.bright_blue(),
         ))
-        .fold(String::new(), |a, b| (a + &b) + ", ")
+        .collect::<Vec<String>>()
+        .join(", ")
     );
   }
 
