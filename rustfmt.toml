@@ -1,1 +1,2 @@
 ignore = ["src/dictionary.rs"]
+tab_spaces = 2

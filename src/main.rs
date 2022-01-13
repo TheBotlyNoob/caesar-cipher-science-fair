@@ -1,12 +1,13 @@
-// Trying to decrypt and encrypt a caesar cipher with a GUI
-
-// #![windows_subsystem = "windows"]
-
+// Trying to decrypt and encrypt a caesar cipher with a CLI
 mod dictionary;
 use owo_colors::OwoColorize;
 use std::process::exit;
 
 fn main() {
+  exit(_main());
+}
+
+fn _main() -> i32 {
   println!("\n");
 
   let menu_options = vec!["Encrypt", "Decrypt", "Exit"];
@@ -34,9 +35,11 @@ fn main() {
   match menu_option {
     "Encrypt" => encrypt(),
     "Decrypt" => decrypt(),
-    "Exit" => exit(0),
+    "Exit" => return 0,
     &_ => (),
-  }
+  };
+
+  0
 }
 
 fn encrypt() {
@@ -58,7 +61,7 @@ fn encrypt() {
 
   println!("The encrypted text is: {}", encrypted.bright_blue());
 
-  main();
+  _main();
 }
 
 fn _encrypt(shift: u8, plain_text: &str) -> String {
@@ -120,6 +123,7 @@ fn decrypt() {
 
       let percent_of_mispelled_words = {
         let mut number_of_mispelled_words = 0;
+
         for word in &words {
           if !DICTIONARY.contains(&&*word.to_lowercase()) {
             number_of_mispelled_words += 1;
@@ -134,7 +138,7 @@ fn decrypt() {
           "got {}, so {} is {} the shift",
           decrypted.red(),
           shift,
-          "NOT".red()
+          "probably not".red()
         );
       } else {
         println!(
@@ -166,25 +170,36 @@ fn decrypt() {
       }
     }
 
-    println!(
-      "The possible shifts are: {}",
-      possible_tries
-        .iter()
-        .map(|tried| format!(
-          "{} which gave {}",
-          tried.shift.bright_blue(),
-          tried.decrypted.bright_blue(),
-        ))
-        .collect::<Vec<String>>()
-        .join(", ")
-    );
+    if possible_tries.len() != 1 {
+      println!(
+        "The possible shifts are: {}",
+        possible_tries
+          .iter()
+          .map(|tried| format!(
+            "{} which gave {}",
+            tried.shift.bright_blue(),
+            tried.decrypted.bright_blue(),
+          ))
+          .collect::<Vec<String>>()
+          .join(", ")
+      );
+    } else {
+      let tried = possible_tries[0];
+
+      println!(
+        "The only possible shift is {} which gave {}",
+        tried.shift.bright_blue(),
+        tried.decrypted.bright_blue()
+      )
+    }
   }
 
-  main();
+  _main();
 }
 
 fn _decrypt(shift: u8, encrypted: &str) -> String {
   let mut decrypted = String::new();
+
   for letter in encrypted.chars() {
     if letter.is_uppercase() {
       decrypted.push_str(
