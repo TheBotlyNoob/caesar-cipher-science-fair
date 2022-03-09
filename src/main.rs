@@ -1,7 +1,7 @@
 // Trying to decrypt and encrypt a caesar cipher with a CLI
 mod dictionary;
 use owo_colors::OwoColorize;
-use std::process::exit;
+use std::{fmt::Debug, process::exit, str::FromStr};
 
 fn main() {
   exit(_main());
@@ -10,20 +10,20 @@ fn main() {
 fn _main() -> i32 {
   println!("\n");
 
-  let menu_options = vec!["Encrypt", "Decrypt", "Exit"];
+  let menu_options = ["Encrypt", "Decrypt", "Exit"];
 
   for (i, item) in menu_options.iter().enumerate() {
     println!("{}: {}", (i + 1).green(), item.bright_blue());
   }
 
-  let mut menu_option = get_int(&format!(
+  let mut menu_option = get_parsed::<usize>(&format!(
     "Choose an option ({}-{}): ",
     1.green(),
     menu_options.len().green()
   ));
 
   while menu_option > menu_options.len() {
-    menu_option = get_int(&format!(
+    menu_option = get_parsed(&format!(
       "Choose an option ({}-{}): ",
       1.green(),
       menu_options.len().green()
@@ -45,16 +45,16 @@ fn _main() -> i32 {
 fn encrypt() {
   let plain_text = get_string("What is the message that you want to encrypt? ");
 
-  let mut shift = get_int(&format!(
+  let mut shift = get_parsed(&format!(
     "What shift do you want to use ({})? ",
     "number".bright_blue()
-  )) as u8;
+  ));
 
   while shift > 26 {
-    shift = get_int(&format!(
+    shift = get_parsed(&format!(
       "What shift do you want to use ({})? ",
       "number".bright_blue()
-    )) as u8
+    ))
   }
 
   let encrypted = _encrypt(shift, &plain_text);
@@ -88,15 +88,15 @@ fn decrypt() {
   ));
 
   if knows {
-    let mut shift = get_int(&format!("What is the shift ({})? ", "number".bright_blue())) as u8;
+    let mut shift = get_parsed(&format!("What is the shift ({})? ", "number".bright_blue()));
     while shift > 26 {
-      shift = get_int(&format!(
+      shift = get_parsed(&format!(
         "What shift do you want to use ({})? ",
         "number".bright_blue()
-      )) as u8
+      ))
     }
 
-    let decrypted = _decrypt(shift as u8, &encrypted);
+    let decrypted = _decrypt(shift, &encrypted);
 
     println!("The plain text is: {}", decrypted.bright_blue());
   } else {
@@ -234,13 +234,17 @@ fn get_bool(prompt: &str) -> bool {
   _str.to_lowercase().starts_with('y')
 }
 
-fn get_int(prompt: &str) -> usize {
+fn get_parsed<T>(prompt: &str) -> T
+where
+  T: FromStr,
+  T::Err: Debug,
+{
   let _str = get_string(prompt);
 
-  let mut int = _str.parse::<usize>();
+  let mut int = _str.parse::<T>();
 
   while int.is_err() {
-    int = get_string(prompt).parse::<usize>();
+    int = get_string(prompt).parse::<T>();
   }
 
   int.unwrap()
