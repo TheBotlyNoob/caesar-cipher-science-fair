@@ -46,8 +46,9 @@ fn encrypt() {
   let plain_text = get_string("What is the message that you want to encrypt? ");
 
   let mut shift = get_parsed(&format!(
-    "What shift do you want to use ({})? ",
-    "number".bright_blue()
+    "What shift do you want to use ({} below or equal to {})? ",
+    "number".bright_blue(),
+    25.green()
   ));
 
   while shift > 26 {
@@ -104,7 +105,7 @@ fn decrypt() {
 
     let mispelled_words_percent_threshold = 35;
 
-    let mut tries = Vec::<Tried>::new();
+    let mut above_threshold = Vec::<AboveThreshold>::new();
 
     for shift in 0..26 {
       let decrypted = _decrypt(shift, &encrypted);
@@ -146,34 +147,17 @@ fn decrypt() {
           decrypted.bright_blue(),
           shift.bright_blue()
         );
-      }
 
-      tries.push(Tried {
-        percent_of_mispelled_words,
-        shift,
-        decrypted,
-      })
-    }
-
-    let mut lowest_percent = 100;
-    let mut possible_tries = Vec::<&Tried>::new();
-
-    for tried in &tries {
-      if tried.percent_of_mispelled_words < lowest_percent {
-        lowest_percent = tried.percent_of_mispelled_words;
+        above_threshold.push(AboveThreshold { shift, decrypted });
       }
     }
 
-    for tried in &tries {
-      if tried.percent_of_mispelled_words == lowest_percent {
-        possible_tries.push(tried);
-      }
-    }
-
-    if possible_tries.len() != 1 {
+    if above_threshold.is_empty() {
+      println!("{} find a shift", "Couldn't".red());
+    } else if above_threshold.len() != 1 {
       println!(
         "The possible shifts are: {}",
-        possible_tries
+        above_threshold
           .iter()
           .map(|tried| format!(
             "{} which gave {}",
@@ -184,7 +168,7 @@ fn decrypt() {
           .join(", ")
       );
     } else {
-      let tried = possible_tries[0];
+      let tried = &above_threshold[0];
 
       println!(
         "The only possible shift is {} which gave {}",
@@ -218,8 +202,7 @@ fn _decrypt(shift: u8, encrypted: &str) -> String {
 }
 
 #[derive(Clone, Debug)]
-struct Tried {
-  percent_of_mispelled_words: usize,
+struct AboveThreshold {
   decrypted: String,
   shift: u8,
 }
@@ -262,5 +245,11 @@ fn get_string(prompt: &str) -> String {
 
   io::stdin().read_line(&mut input).ok();
 
-  input.trim().to_owned()
+  let mut input = input.trim().to_owned();
+
+  if input.is_empty() {
+    input = get_string(prompt);
+  }
+
+  input
 }
